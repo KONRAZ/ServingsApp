@@ -1,6 +1,4 @@
-using ServingsLib.Models;
-
-namespace Tests.Models;
+namespace Tests.ServingsLib.Models;
 
 public class MenuItemTests
 {

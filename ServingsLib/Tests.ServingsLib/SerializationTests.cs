@@ -1,9 +1,8 @@
 using Newtonsoft.Json;
-using ServingsLib.Models;
 using ServingsLib.Requests;
 using ServingsLib.Responses;
 
-namespace Tests;
+namespace Tests.ServingsLib;
 
 public class SerializationTests
 {

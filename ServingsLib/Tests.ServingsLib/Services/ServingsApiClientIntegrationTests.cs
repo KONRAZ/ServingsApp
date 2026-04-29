@@ -1,12 +1,9 @@
 using System.Net;
 using System.Text;
-using Moq;
 using Moq.Protected;
-using ServingsLib.Models;
 using ServingsLib.Services;
-using ServingsLib.Exceptions;
 
-namespace Tests.Services;
+namespace Tests.ServingsLib.Services;
 
 public class ServingsApiClientIntegrationTests : IDisposable
 {
