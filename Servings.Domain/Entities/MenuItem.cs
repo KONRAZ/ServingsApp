@@ -1,14 +1,22 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Servings.Domain.Entities;
 
 /// <summary>
 /// Блюдо в меню.
 /// </summary>
+[Table("menu-items")]
 public class MenuItem
 {
     /// <summary>
     /// Уникальный идентификатор блюда.
     /// </summary>
     public int Id { get; set; }
+
+    /// <summary>
+    /// Внешний идентификатор блюда из ServingsLib.
+    /// </summary>
+    public string ExternalId { get; set; } = string.Empty;
 
     /// <summary>
     /// Название блюда.
