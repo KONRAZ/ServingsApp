@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Servings.Infrastructure.Data;
 using Servings.Infrastructure.Data.Repositories;
 using Servings.Infrastructure.External;
@@ -28,13 +29,13 @@ public static class ServiceCollectionExtensions
 
         // Infrastructure
         services.AddDbContext<ApplicationContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString()));
+            options.UseNpgsql(configuration.GetConnectionString("ServingsDbConnection")));
 
         services.AddScoped<IMenuRepository, MenuRepository>();
         services.AddScoped<IFileLogger, FileLogger>();
         services.AddScoped<IServingsApiClient, ServingsApiClientWrapper>(provider =>
         {
-            var settings = provider.GetRequiredService<AppSettings>();
+            var settings = provider.GetRequiredService<IOptions<AppSettings>>().Value;
             return new ServingsApiClientWrapper(
                 settings.ServerUrl, 
                 settings.Username, 
