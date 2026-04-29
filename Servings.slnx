@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Servings.Application/Servings.Application.csproj" />
+  <Project Path="Servings.Console/Servings.Console.csproj" />
+  <Project Path="Servings.Domain/Servings.Domain.csproj" />
+  <Project Path="Servings.Infrastructure/Servings.Infrastructure.csproj" />
+</Solution>
