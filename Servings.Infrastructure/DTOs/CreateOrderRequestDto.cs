@@ -17,9 +17,9 @@ public class CreateOrderRequestDto
 public class OrderItemDto
 {
     /// <summary>
-    /// Артикул блюда.
+    /// Id блюда из меню.
     /// </summary>
-    public string Article { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
 
     /// <summary>
     /// Количество блюда.

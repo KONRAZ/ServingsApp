@@ -68,7 +68,7 @@ public class OrderService : IOrderService
 
             var orderItem = new OrderItemDto
             {
-                Article = article,
+                Id = menuItem.ExternalId,
                 Quantity = quantity
             };
 

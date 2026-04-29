@@ -3,4 +3,5 @@
   <Project Path="Servings.ConsoleApp/Servings.ConsoleApp.csproj" />
   <Project Path="Servings.Domain/Servings.Domain.csproj" />
   <Project Path="Servings.Infrastructure/Servings.Infrastructure.csproj" />
+  <Project Path="Servings.MockApi/Servings.MockApi.csproj" />
 </Solution>

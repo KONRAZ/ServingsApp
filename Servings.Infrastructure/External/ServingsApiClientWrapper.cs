@@ -29,6 +29,7 @@ public class ServingsApiClientWrapper : IServingsApiClient
             
             return menuItems.Select(item => new MenuItemDto
             {
+                Id = item.Id,
                 Name = item.Name,
                 Article = item.Article,
                 Price = item.Price
@@ -47,7 +48,7 @@ public class ServingsApiClientWrapper : IServingsApiClient
         {
             var orderItems = request.Items.Select(item => new ServingsLib.Models.OrderItem
             {
-                Id = item.Article,
+                Id = item.Id,
                 Quantity = item.Quantity.ToString()
             }).ToList();
 
