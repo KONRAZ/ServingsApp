@@ -1,9 +1,6 @@
-using Moq;
-using ServingsLib.Models;
 using ServingsLib.Services;
-using ServingsLib.Exceptions;
 
-namespace Tests;
+namespace Tests.ServingsLib;
 
 public class ServingsClientTests : IDisposable
 {

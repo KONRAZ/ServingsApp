@@ -1,8 +1,6 @@
-using ServingsLib.Models;
 using ServingsLib.Services;
-using ServingsLib.Exceptions;
 
-namespace Tests.Services;
+namespace Tests.ServingsLib.Services;
 
 public class ServingsApiClientSimpleTests
 {
