@@ -8,12 +8,22 @@ using ServingsLib.Responses;
 
 namespace ServingsLib.Services;
 
+/// <summary>
+/// HTTP клиент для взаимодействия с API сервера заказов
+/// </summary>
 public class ServingsApiClient : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly string _baseUrl;
     private bool _disposed = false;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр HTTP клиента
+    /// </summary>
+    /// <param name="baseUrl">Базовый URL сервера</param>
+    /// <param name="username">Имя пользователя для Basic аутентификации</param>
+    /// <param name="password">Пароль для Basic аутентификации</param>
+    /// <exception cref="ArgumentException">Выбрасывается при невалидных параметрах</exception>
     public ServingsApiClient(string baseUrl, string username, string password)
     {
         if (string.IsNullOrWhiteSpace(baseUrl))
@@ -34,6 +44,12 @@ public class ServingsApiClient : IDisposable
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
+    /// <summary>
+    /// Получает меню с сервера
+    /// </summary>
+    /// <param name="withPrice">Включать ли цены в ответ</param>
+    /// <returns>Список блюд</returns>
+    /// <exception cref="ServingsApiException">Выбрасывается при ошибке API сервера или сетевой проблеме</exception>
     public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true)
     {
         try
@@ -78,6 +94,12 @@ public class ServingsApiClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Отправляет заказ на сервер
+    /// </summary>
+    /// <param name="order">Заказ для отправки</param>
+    /// <exception cref="ArgumentException">Выбрасывается при невалидных параметрах заказа</exception>
+    /// <exception cref="ServingsApiException">Выбрасывается при ошибке API сервера или сетевой проблеме</exception>
     public async Task SendOrderAsync(Order order)
     {
         ArgumentNullException.ThrowIfNull(order);
@@ -132,6 +154,7 @@ public class ServingsApiClient : IDisposable
         }
     }
 
+    
     public void Dispose()
     {
         if (_disposed) return;

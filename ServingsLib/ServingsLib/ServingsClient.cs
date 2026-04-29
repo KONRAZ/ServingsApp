@@ -3,6 +3,9 @@ using ServingsLib.Services;
 
 namespace ServingsLib;
 
+/// <summary>
+/// Публичный клиент для работы с сервером заказов
+/// </summary>
 public class ServingsClient : IDisposable
 {
     private readonly ServingsApiClient _apiClient;
@@ -14,6 +17,7 @@ public class ServingsClient : IDisposable
     /// <param name="baseUrl">Базовый URL сервера</param>
     /// <param name="username">Имя пользователя для Basic аутентификации</param>
     /// <param name="password">Пароль для Basic аутентификации</param>
+    /// <exception cref="ArgumentException">Выбрасывается при невалидных параметрах</exception>
     public ServingsClient(string baseUrl, string username, string password)
     {
         if (string.IsNullOrWhiteSpace(baseUrl))
@@ -71,7 +75,7 @@ public class ServingsClient : IDisposable
     {
         return new OrderItem { Id = id, Quantity = quantity };
     }
-
+    
     public void Dispose()
     {
         if (_disposed) return;
