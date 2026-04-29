@@ -6,6 +6,11 @@ namespace Servings.Infrastructure.DTOs;
 public class MenuItemDto
 {
     /// <summary>
+    /// Идентификатор блюда.
+    /// </summary>
+    public string Id { get; set; } = string.Empty;
+
+    /// <summary>
     /// Название блюда.
     /// </summary>
     public string Name { get; set; } = string.Empty;

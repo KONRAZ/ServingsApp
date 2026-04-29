@@ -17,16 +17,7 @@ public class ApplicationContext : DbContext
     /// </summary>
     public DbSet<MenuItem> MenuItems { get; set; }
 
-    /// <summary>
-    /// Набор данных для заказов.
-    /// </summary>
-    public DbSet<Order> Orders { get; set; }
-
-    /// <summary>
-    /// Набор данных для элементов заказа.
-    /// </summary>
-    public DbSet<OrderItem> OrderItems { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -35,39 +26,12 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<MenuItem>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.ExternalId).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Article).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Price).HasPrecision(10, 2);
+            entity.HasIndex(e => e.ExternalId).IsUnique();
             entity.HasIndex(e => e.Article).IsUnique();
-        });
-
-        // Конфигурация Order
-        modelBuilder.Entity<Order>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-        });
-
-        // Конфигурация OrderItem
-        modelBuilder.Entity<OrderItem>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Article).IsRequired().HasMaxLength(50);
-            entity.Property(e => e.Quantity).IsRequired();
-
-            // Связь с Order
-            entity.HasOne<Order>()
-                .WithMany(o => o.OrderItems)
-                .HasForeignKey("OrderId")
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Связь с MenuItem через Article
-            entity.HasOne<MenuItem>()
-                .WithMany()
-                .HasForeignKey(e => e.Article)
-                .HasPrincipalKey(e => e.Article)
-                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
