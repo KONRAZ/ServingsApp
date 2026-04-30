@@ -4,4 +4,5 @@
   <Project Path="Servings.Domain/Servings.Domain.csproj" />
   <Project Path="Servings.Infrastructure/Servings.Infrastructure.csproj" />
   <Project Path="Servings.MockApi/Servings.MockApi.csproj" />
+  <Project Path="ServingsLib/ServingsLib/ServingsLib.csproj" />
 </Solution>

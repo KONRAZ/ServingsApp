@@ -18,19 +18,19 @@ public class DbInitializer : IDbInitializer
         _logger = logger;
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             _logger.LogInformation("Инициализация базы данных...");
 
             // Проверяем, существует ли база данных
-            var canConnect = await _context.Database.CanConnectAsync();
+            var canConnect = await _context.Database.CanConnectAsync(cancellationToken);
             
             if (!canConnect)
             {
                 _logger.LogWarning("База данных недоступна. Создаем новую базу...");
-                await _context.Database.EnsureCreatedAsync();
+                await _context.Database.EnsureCreatedAsync(cancellationToken);
                 _logger.LogInformation("База данных создана");
             }
             else
@@ -41,7 +41,7 @@ public class DbInitializer : IDbInitializer
                 if (pendingMigrations.Any())
                 {
                     _logger.LogInformation("Применяем миграции...");
-                    await _context.Database.MigrateAsync();
+                    await _context.Database.MigrateAsync(cancellationToken);
                     _logger.LogInformation("Миграции успешно применены");
                 }
                 else

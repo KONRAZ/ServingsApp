@@ -24,27 +24,27 @@ public class FileLogger : IFileLogger
     }
 
     /// <inheritdoc/>
-    public async Task LogInfoAsync(string message)
+    public async Task LogInfoAsync(string message, CancellationToken cancellationToken = default)
     {
-        await WriteLogAsync("INFO", message);
+        await WriteLogAsync("INFO", message, null, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task LogErrorAsync(string message, Exception? exception = null)
+    public async Task LogErrorAsync(string message, Exception? exception = null, CancellationToken cancellationToken = default)
     {
-        await WriteLogAsync("ERROR", message, exception);
+        await WriteLogAsync("ERROR", message, exception, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task LogWarningAsync(string message)
+    public async Task LogWarningAsync(string message, CancellationToken cancellationToken = default)
     {
-        await WriteLogAsync("WARNING", message);
+        await WriteLogAsync("WARNING", message, null, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task LogDebugAsync(string message)
+    public async Task LogDebugAsync(string message, CancellationToken cancellationToken = default)
     {
-        await WriteLogAsync("DEBUG", message);
+        await WriteLogAsync("DEBUG", message, null, cancellationToken);
     }
 
     private string GetLogFilePath()
@@ -52,7 +52,7 @@ public class FileLogger : IFileLogger
         return Path.Combine(_logDirectory, _logFileName);
     }
 
-    private async Task WriteLogAsync(string level, string message, Exception? exception = null)
+    private async Task WriteLogAsync(string level, string message, Exception? exception = null, CancellationToken cancellationToken = default)
     {
         var logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] {message}";
         
@@ -68,6 +68,6 @@ public class FileLogger : IFileLogger
         logEntry += Environment.NewLine;
 
         var logFilePath = GetLogFilePath();
-        await File.AppendAllTextAsync(logFilePath, logEntry);
+        await File.AppendAllTextAsync(logFilePath, logEntry, cancellationToken);
     }
 }

@@ -10,25 +10,33 @@ public interface IMenuRepository
     /// <summary>
     /// Получить все блюда из меню.
     /// </summary>
-    Task<List<MenuItem>> GetAllAsync();
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<List<MenuItem>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Получить блюдо по артикулу.
     /// </summary>
-    Task<MenuItem?> GetByArticleAsync(string article);
+    /// <param name="article">Артикул блюда</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<MenuItem?> GetByArticleAsync(string article, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сохранить список блюд в меню.
     /// </summary>
-    Task SaveMenuItemsAsync(List<MenuItem> menuItems);
+    /// <param name="menuItems">Список блюд для сохранения</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task SaveMenuItemsAsync(List<MenuItem> menuItems, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Проверить, существует ли блюдо с указанным артикулом.
     /// </summary>
-    Task<bool> ExistsByArticleAsync(string article);
+    /// <param name="article">Артикул блюда</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<bool> ExistsByArticleAsync(string article, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Удалить все блюда из меню.
     /// </summary>
-    Task ClearAllAsync();
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task ClearAllAsync(CancellationToken cancellationToken = default);
 }
