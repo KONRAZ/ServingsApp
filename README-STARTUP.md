@@ -34,8 +34,8 @@ chmod +x start.sh
 
 **PostgreSQL:**
 - Хост: localhost:5432
-- База: servings_db
-- Пользователь: postgres
+- База: servings
+- Пользователь: servingsuser
 - Пароль: servingspass
 - Схема: servings (создается автоматически в Docker)
 
