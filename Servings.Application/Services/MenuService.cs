@@ -33,48 +33,48 @@ public class MenuService : IMenuService
     }
 
     /// <inheritdoc/>
-    public async Task<bool> LoadMenuFromServerAsync()
+    public async Task<bool> LoadMenuFromServerAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            await _logger.LogInfoAsync("Загрузка меню с сервера...");
+            await _logger.LogInfoAsync("Загрузка меню с сервера...", cancellationToken);
 
-            var menuDtos = await _apiClient.GetMenuAsync();
+            var menuDtos = await _apiClient.GetMenuAsync(cancellationToken);
             var menuItems = menuDtos.ToDomainList();
 
-            await _menuRepository.SaveMenuItemsAsync(menuItems);
+            await _menuRepository.SaveMenuItemsAsync(menuItems, cancellationToken);
 
-            await _logger.LogInfoAsync($"Меню успешно загружено. Количество блюд: {menuItems.Count}");
+            await _logger.LogInfoAsync($"Меню успешно загружено. Количество блюд: {menuItems.Count}", cancellationToken);
             return true;
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync("Ошибка при загрузке меню с сервера", ex);
+            await _logger.LogErrorAsync("Ошибка при загрузке меню с сервера", ex, cancellationToken);
             return false;
         }
     }
 
     /// <inheritdoc/>
-    public async Task<List<MenuItem>> GetLocalMenuAsync()
+    public async Task<List<MenuItem>> GetLocalMenuAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var menuItems = await _menuRepository.GetAllAsync();
+            var menuItems = await _menuRepository.GetAllAsync(cancellationToken);
             return menuItems;
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync("Ошибка при получении локального меню", ex);
+            await _logger.LogErrorAsync("Ошибка при получении локального меню", ex, cancellationToken);
             return new List<MenuItem>();
         }
     }
 
     /// <inheritdoc/>
-    public async Task DisplayMenuAsync()
+    public async Task DisplayMenuAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var menuItems = await GetLocalMenuAsync();
+            var menuItems = await GetLocalMenuAsync(cancellationToken);
             
             if (!menuItems.Any())
             {
@@ -96,23 +96,23 @@ public class MenuService : IMenuService
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync("Ошибка при отображении меню", ex);
+            await _logger.LogErrorAsync("Ошибка при отображении меню", ex, cancellationToken);
             Console.WriteLine("Ошибка при отображении меню");
         }
     }
 
     /// <inheritdoc/>
-    public async Task<MenuItem?> FindByArticleAsync(string article)
+    public async Task<MenuItem?> FindByArticleAsync(string article, CancellationToken cancellationToken = default)
     {
         try
         {
-            var menuItems = await GetLocalMenuAsync();
+            var menuItems = await GetLocalMenuAsync(cancellationToken);
             return menuItems.FirstOrDefault(m => 
                 m.Article.Equals(article, StringComparison.OrdinalIgnoreCase));
         }
         catch (Exception ex)
         {
-            await _logger.LogErrorAsync($"Ошибка при поиске блюда по артикулу: {article}", ex);
+            await _logger.LogErrorAsync($"Ошибка при поиске блюда по артикулу: {article}", ex, cancellationToken);
             return null;
         }
     }

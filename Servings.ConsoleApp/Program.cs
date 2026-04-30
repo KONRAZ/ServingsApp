@@ -21,6 +21,16 @@ class Program
         Console.WriteLine("=== СЕРВИС ЗАКАЗОВ ===");
         Console.WriteLine();
 
+        using var cts = new CancellationTokenSource();
+        
+        // Обработка Ctrl+C для отмены
+        Console.CancelKeyPress += (sender, e) =>
+        {
+            e.Cancel = true;
+            cts.Cancel();
+            Console.WriteLine("\nОтмена операции...");
+        };
+
         try
         {
             var host = CreateHostBuilder(args).Build();
@@ -28,21 +38,29 @@ class Program
             
             // Инициализируем базу данных
             var dbInitializer = _serviceProvider.GetRequiredService<IDbInitializer>();
-            await dbInitializer.InitializeAsync();
+            await dbInitializer.InitializeAsync(cts.Token);
             
             _menuService = _serviceProvider.GetRequiredService<IMenuService>();
             _orderService = _serviceProvider.GetRequiredService<IOrderService>();
             _logger = _serviceProvider.GetRequiredService<IFileLogger>();
 
-            await _logger.LogInfoAsync("Приложение запущено");
-            await RunApplicationAsync();
+            await _logger.LogInfoAsync("Приложение запущено", cts.Token);
+            await RunApplicationAsync(cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("\nОперация отменена пользователем.");
+            if (_logger != null)
+            {
+                await _logger.LogInfoAsync("Операция отменена пользователем", cts.Token);
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Критическая ошибка: {ex.Message}");
             if (_logger != null)
             {
-                await _logger.LogErrorAsync("Критическая ошибка приложения", ex);
+                await _logger.LogErrorAsync("Критическая ошибка приложения", ex, cts.Token);
             }
         }
 
@@ -65,11 +83,11 @@ class Program
             });
     }
 
-    private static async Task RunApplicationAsync()
+    private static async Task RunApplicationAsync(CancellationToken cancellationToken)
     {
         // Шаг 1: Автоматическая загрузка меню с сервера
         Console.WriteLine("\nЗагрузка меню с сервера...");
-        var loadSuccess = await _menuService!.LoadMenuFromServerAsync();
+        var loadSuccess = await _menuService!.LoadMenuFromServerAsync(cancellationToken);
         
         if (!loadSuccess)
         {
@@ -84,16 +102,16 @@ class Program
 
         // Шаг 2: Автоматическое отображение загруженного меню
         Console.WriteLine("✅ Меню успешно загружено");
-        await _menuService!.DisplayMenuAsync();
-        await _logger!.LogInfoAsync("Меню успешно загружено и отображено");
+        await _menuService!.DisplayMenuAsync(cancellationToken);
+        await _logger!.LogInfoAsync("Меню успешно загружено и отображено", cancellationToken);
 
         // Шаг 3: Основной цикл работы с заказами
-        await ProcessOrdersAsync();
+        await ProcessOrdersAsync(cancellationToken);
     }
 
-    private static async Task ProcessOrdersAsync()
+    private static async Task ProcessOrdersAsync(CancellationToken cancellationToken)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             Console.WriteLine("\n=== РАБОТА С ЗАКАЗАМИ ===");
             Console.WriteLine("1. Создать новый заказ");
@@ -106,11 +124,11 @@ class Program
             switch (choice)
             {
                 case "1":
-                    await CreateAndProcessOrderAsync();
+                    await CreateAndProcessOrderAsync(cancellationToken);
                     break;
                 case "2":
                 case "Q":
-                    await _logger!.LogInfoAsync("Пользователь вышел из приложения");
+                    await _logger!.LogInfoAsync("Пользователь вышел из приложения", cancellationToken);
                     return;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте снова.");
@@ -119,21 +137,21 @@ class Program
         }
     }
 
-    private static async Task CreateAndProcessOrderAsync()
+    private static async Task CreateAndProcessOrderAsync(CancellationToken cancellationToken)
     {
         // Создаем новый заказ
-        var order = await _orderService!.CreateOrderAsync();
+        var order = await _orderService!.CreateOrderAsync(cancellationToken);
         Console.WriteLine("✅ Создан новый заказ");
-        await _logger!.LogInfoAsync("Создан новый заказ");
+        await _logger!.LogInfoAsync("Создан новый заказ", cancellationToken);
 
         // Ввод списка блюд
-        var orderItems = await GetOrderItemsFromUser();
+        var orderItems = await GetOrderItemsFromUser(cancellationToken);
         if (orderItems == null) return; // Пользователь отменил ввод
 
         // Добавляем позиции в заказ
         foreach (var (article, quantity) in orderItems)
         {
-            var success = await _orderService!.AddItemToOrderAsync(order, article, quantity);
+            var success = await _orderService!.AddItemToOrderAsync(order, article, quantity, cancellationToken);
             if (!success)
             {
                 Console.WriteLine($"❌ Не удалось добавить позицию {article} в заказ");
@@ -142,12 +160,12 @@ class Program
         }
 
         // Отправляем заказ на сервер
-        await SendOrderAndShowResult(order);
+        await SendOrderAndShowResult(order, cancellationToken);
     }
 
-    private static async Task<List<(string article, int quantity)>?> GetOrderItemsFromUser()
+    private static async Task<List<(string article, int quantity)>?> GetOrderItemsFromUser(CancellationToken cancellationToken)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             Console.Write("\nВведите список блюд (формат: Код1:Количество1;Код2:Количество2): ");
             var input = Console.ReadLine()?.Trim();
@@ -166,7 +184,7 @@ class Program
             }
 
             // Проверяем существование всех кодов и корректность количества
-            var menuItems = await _menuService!.GetLocalMenuAsync();
+            var menuItems = await _menuService!.GetLocalMenuAsync(cancellationToken);
             var validArticles = menuItems.Select(m => m.Article).ToHashSet();
             
             var validationErrors = OrderInputValidator.ValidateOrderItems(items, validArticles);
@@ -183,9 +201,11 @@ class Program
 
             return items;
         }
+        
+        return null;
     }
 
-    private static async Task SendOrderAndShowResult(CreateOrderRequestDto order)
+    private static async Task SendOrderAndShowResult(CreateOrderRequestDto order, CancellationToken cancellationToken)
     {
         if (!order.Items.Any())
         {
@@ -194,18 +214,18 @@ class Program
         }
 
         Console.WriteLine("\nОтправка заказа на сервер...");
-        var response = await _orderService!.SendOrderAsync(order);
+        var response = await _orderService!.SendOrderAsync(order, cancellationToken);
 
         if (response.Success)
         {
             Console.WriteLine("УСПЕХ");
             Console.WriteLine($"ID заказа на сервере: {response.OrderId}");
-            await _logger!.LogInfoAsync($"Заказ успешно отправлен. Server OrderId: {response.OrderId}");
+            await _logger!.LogInfoAsync($"Заказ успешно отправлен. Server OrderId: {response.OrderId}", cancellationToken);
         }
         else
         {
             Console.WriteLine($"ОШИБКА: {response.Message}");
-            await _logger!.LogWarningAsync($"Ошибка при отправке заказа: {response.Message}");
+            await _logger!.LogWarningAsync($"Ошибка при отправке заказа: {response.Message}", cancellationToken);
         }
     }
 }

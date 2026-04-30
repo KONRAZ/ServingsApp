@@ -10,15 +10,22 @@ public interface IOrderService
     /// <summary>
     /// Создать новый заказ.
     /// </summary>
-    Task<CreateOrderRequestDto> CreateOrderAsync();
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<CreateOrderRequestDto> CreateOrderAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Добавить элемент в заказ.
     /// </summary>
-    Task<bool> AddItemToOrderAsync(CreateOrderRequestDto order, string article, int quantity);
+    /// <param name="order">Заказ для добавления элемента</param>
+    /// <param name="article">Артикул блюда</param>
+    /// <param name="quantity">Количество</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<bool> AddItemToOrderAsync(CreateOrderRequestDto order, string article, int quantity, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Отправить заказ на сервер.
     /// </summary>
-    Task<OrderResponseDto> SendOrderAsync(CreateOrderRequestDto order);
+    /// <param name="order">Заказ для отправки</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<OrderResponseDto> SendOrderAsync(CreateOrderRequestDto order, CancellationToken cancellationToken = default);
 }

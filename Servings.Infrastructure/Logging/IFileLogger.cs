@@ -8,20 +8,29 @@ public interface IFileLogger
     /// <summary>
     /// Записать информационное сообщение в лог.
     /// </summary>
-    Task LogInfoAsync(string message);
+    /// <param name="message">Сообщение для логирования</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task LogInfoAsync(string message, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Записать сообщение об ошибке в лог.
     /// </summary>
-    Task LogErrorAsync(string message, Exception? exception = null);
+    /// <param name="message">Сообщение об ошибке</param>
+    /// <param name="exception">Исключение (опционально)</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task LogErrorAsync(string message, Exception? exception = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Записать предупреждение в лог.
     /// </summary>
-    Task LogWarningAsync(string message);
+    /// <param name="message">Предупреждение</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task LogWarningAsync(string message, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Записать отладочное сообщение в лог.
     /// </summary>
-    Task LogDebugAsync(string message);
+    /// <param name="message">Отладочное сообщение</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task LogDebugAsync(string message, CancellationToken cancellationToken = default);
 }

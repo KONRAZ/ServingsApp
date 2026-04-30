@@ -8,5 +8,6 @@ public interface IDbInitializer
     /// <summary>
     /// Инициализировать базу данных.
     /// </summary>
-    Task InitializeAsync();
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task InitializeAsync(CancellationToken cancellationToken = default);
 }

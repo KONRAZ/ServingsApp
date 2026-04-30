@@ -36,22 +36,24 @@ public class ServingsClient : IDisposable
     /// Получает меню с сервера
     /// </summary>
     /// <param name="withPrice">Включать ли цены в ответ</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Список блюд</returns>
     /// <exception cref="Exceptions.ServingsApiException">Возникает при ошибке сервера или сетевой проблеме</exception>
-    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true)
+    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true, CancellationToken cancellationToken = default)
     {
-        return await _apiClient.GetMenuAsync(withPrice);
+        return await _apiClient.GetMenuAsync(withPrice, cancellationToken);
     }
 
     /// <summary>
     /// Отправляет заказ на сервер
     /// </summary>
     /// <param name="order">Заказ для отправки</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <exception cref="ArgumentException">Возникает при невалидных параметрах заказа</exception>
     /// <exception cref="Exceptions.ServingsApiException">Возникает при ошибке сервера или сетевой проблеме</exception>
-    public async Task SendOrderAsync(Order order)
+    public async Task SendOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
-        await _apiClient.SendOrderAsync(order);
+        await _apiClient.SendOrderAsync(order, cancellationToken);
     }
 
     /// <summary>

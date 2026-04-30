@@ -48,9 +48,10 @@ public class ServingsApiClient : IDisposable
     /// Получает меню с сервера
     /// </summary>
     /// <param name="withPrice">Включать ли цены в ответ</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Список блюд</returns>
     /// <exception cref="ServingsApiException">Выбрасывается при ошибке API сервера или сетевой проблеме</exception>
-    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true)
+    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -62,7 +63,7 @@ public class ServingsApiClient : IDisposable
             var jsonRequest = JsonConvert.SerializeObject(request);
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"{_baseUrl}/api/command", content);
+            var response = await _httpClient.PostAsync($"{_baseUrl}/api/command", content, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -98,9 +99,10 @@ public class ServingsApiClient : IDisposable
     /// Отправляет заказ на сервер
     /// </summary>
     /// <param name="order">Заказ для отправки</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <exception cref="ArgumentException">Выбрасывается при невалидных параметрах заказа</exception>
     /// <exception cref="ServingsApiException">Выбрасывается при ошибке API сервера или сетевой проблеме</exception>
-    public async Task SendOrderAsync(Order order)
+    public async Task SendOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(order);
 
@@ -124,7 +126,7 @@ public class ServingsApiClient : IDisposable
             var jsonRequest = JsonConvert.SerializeObject(request);
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"{_baseUrl}/api/command", content);
+            var response = await _httpClient.PostAsync($"{_baseUrl}/api/command", content, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             var responseContent = await response.Content.ReadAsStringAsync();

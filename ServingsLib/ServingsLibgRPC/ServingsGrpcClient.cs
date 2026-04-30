@@ -28,22 +28,24 @@ public class ServingsGrpcClient : IDisposable
     /// Получает меню с сервера
     /// </summary>
     /// <param name="withPrice">Включать ли цены в ответ</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Список блюд</returns>
     /// <exception cref="Exceptions.ServingsGrpcException">Возникает при ошибке сервера или сетевой проблеме</exception>
-    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true)
+    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true, CancellationToken cancellationToken = default)
     {
-        return await _grpcClient.GetMenuAsync(withPrice);
+        return await _grpcClient.GetMenuAsync(withPrice, cancellationToken);
     }
 
     /// <summary>
     /// Отправляет заказ на сервер
     /// </summary>
     /// <param name="order">Заказ для отправки</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <exception cref="ArgumentException">Возникает при невалидных параметрах заказа</exception>
     /// <exception cref="Exceptions.ServingsGrpcException">Возникает при ошибке сервера или сетевой проблеме</exception>
-    public async Task SendOrderAsync(Order order)
+    public async Task SendOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
-        await _grpcClient.SendOrderAsync(order);
+        await _grpcClient.SendOrderAsync(order, cancellationToken);
     }
     
     public void Dispose()

@@ -10,10 +10,13 @@ public interface IServingsApiClient
     /// <summary>
     /// Получить меню с сервера.
     /// </summary>
-    Task<List<MenuItemDto>> GetMenuAsync();
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<List<MenuItemDto>> GetMenuAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Отправить заказ на сервер.
     /// </summary>
-    Task<OrderResponseDto> SendOrderAsync(CreateOrderRequestDto request);
+    /// <param name="request">Запрос на создание заказа</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
+    Task<OrderResponseDto> SendOrderAsync(CreateOrderRequestDto request, CancellationToken cancellationToken = default);
 }

@@ -33,14 +33,15 @@ public class SmsTestGrpcClient : IDisposable
     /// Получает меню с сервера
     /// </summary>
     /// <param name="withPrice">Включать ли цены в ответ</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <returns>Список блюд</returns>
     /// <exception cref="ServingsGrpcException">Выбрасывается при ошибке gRPC сервера или сетевой проблеме</exception>
-    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true)
+    public async Task<List<MenuItem>> GetMenuAsync(bool withPrice = true, CancellationToken cancellationToken = default)
     {
         try
         {
             var request = new BoolValue { Value = withPrice };
-            var response = await _client.GetMenuAsync(request);
+            var response = await _client.GetMenuAsync(request, cancellationToken: cancellationToken);
 
             return !response.Success ? 
                 throw new ServingsGrpcException($"Server returned error: {response.ErrorMessage}", response.ErrorMessage) 
@@ -60,9 +61,10 @@ public class SmsTestGrpcClient : IDisposable
     /// Отправляет заказ на сервер
     /// </summary>
     /// <param name="order">Заказ для отправки</param>
+    /// <param name="cancellationToken">Токен отмены операции</param>
     /// <exception cref="ArgumentException">Выбрасывается при невалидных параметрах заказа</exception>
     /// <exception cref="ServingsGrpcException">Выбрасывается при ошибке gRPC сервера или сетевой проблеме</exception>
-    public async Task SendOrderAsync(Order order)
+    public async Task SendOrderAsync(Order order, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(order);
 
@@ -78,7 +80,7 @@ public class SmsTestGrpcClient : IDisposable
 
         try
         {
-            var response = await _client.SendOrderAsync(order);
+            var response = await _client.SendOrderAsync(order, cancellationToken: cancellationToken);
 
             if (!response.Success)
             {

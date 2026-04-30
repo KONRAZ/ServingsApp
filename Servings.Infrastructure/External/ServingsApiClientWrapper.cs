@@ -21,11 +21,11 @@ public class ServingsApiClientWrapper : IServingsApiClient
     }
 
     /// <inheritdoc/>
-    public async Task<List<MenuItemDto>> GetMenuAsync()
+    public async Task<List<MenuItemDto>> GetMenuAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var menuItems = await _client.GetMenuAsync();
+            var menuItems = await _client.GetMenuAsync(true, cancellationToken);
             
             return menuItems.Select(item => new MenuItemDto
             {
@@ -42,7 +42,7 @@ public class ServingsApiClientWrapper : IServingsApiClient
     }
 
     /// <inheritdoc/>
-    public async Task<OrderResponseDto> SendOrderAsync(CreateOrderRequestDto request)
+    public async Task<OrderResponseDto> SendOrderAsync(CreateOrderRequestDto request, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -53,7 +53,7 @@ public class ServingsApiClientWrapper : IServingsApiClient
             }).ToList();
 
             var order = new ServingsLib.Models.Order(Guid.NewGuid().ToString(), orderItems);
-            await _client.SendOrderAsync(order);
+            await _client.SendOrderAsync(order, cancellationToken);
 
             return new OrderResponseDto
             {
